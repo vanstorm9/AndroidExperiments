@@ -5,41 +5,50 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.io.FileNotFoundException;
 
 public class ShowCaptureActivity extends AppCompatActivity {
 
+    String Uid;
+    Bitmap bitmap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_capture);
 
-        Bundle extras = getIntent().getExtras();
-        assert extras != null;
-        byte[] b = extras.getByteArray("capture");
 
-        if(b!=null){
-            ImageView image = findViewById(R.id.imageCaptured);
-
-            Bitmap decodedBitmap = BitmapFactory.decodeByteArray(b,0,b.length);
-
-            Bitmap rotateBitmap = rotate(decodedBitmap);
-
-
-            image.setImageBitmap(rotateBitmap);
-
+        try {
+            bitmap = BitmapFactory.decodeStream(getApplication().openFileInput("imageToSend"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            finish();
+            return;
         }
 
-    }
+        ImageView mImage = findViewById(R.id.imageCaptured);
+        mImage.setImageBitmap(bitmap);
 
-    private Bitmap rotate(Bitmap decodedBitmap) {
-        int w = decodedBitmap.getWidth();
-        int h = decodedBitmap.getHeight();
+        Uid = FirebaseAuth.getInstance().getUid();
 
-        Matrix matrix = new Matrix();
-        matrix.setRotate(90);
+        /*
+        Button mSend = findViewById(R.id.send);
+        mSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), ChooseReceiverActivity.class);
+                startActivity(intent);
+                return;
+            }
+        });
+        */
 
-        return Bitmap.createBitmap(decodedBitmap,0,0,w,h,matrix, true);
+
     }
 }
