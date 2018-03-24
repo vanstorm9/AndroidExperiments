@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by anthony on 3/24/18.
@@ -30,6 +31,7 @@ import java.io.IOException;
 public class CameraFragment extends Fragment implements SurfaceHolder.Callback{
 
     Camera camera;
+    Camera.PictureCallback jpegCallback;
     SurfaceView mSurfaceView;
     SurfaceHolder mSurfaceHolder;
 
@@ -55,15 +57,40 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback{
         }
 
         Button mLogout = view.findViewById(R.id.logout);
+        Button mCapture = view.findViewById(R.id.capture);
+
         mLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LogOut();
             }
         });
+        mCapture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                captureImage();
+            }
+
+
+        });
+
+        jpegCallback = new Camera.PictureCallback() {
+            @Override
+            public void onPictureTaken(byte[] bytes, Camera camera) {
+                Intent intent = new Intent(getActivity(), ShowCaptureActivity.class);
+                intent.putExtra("capture",bytes);
+                startActivity(intent);
+                return;
+            }
+        };
+
 
         return view;
 
+    }
+
+    private void captureImage() {
+        camera.takePicture(null, null, jpegCallback);
     }
 
     @Override
@@ -75,6 +102,22 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback{
         camera.setDisplayOrientation(90);
         parameters.setPreviewFrameRate(30);
         parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+
+
+        // Loops through camera preview sizes and chooses largest one (since we are using full screen)
+        Camera.Size bestSize = null;
+        List<Camera.Size> sizeList = camera.getParameters().getSupportedPreviewSizes();
+        bestSize = sizeList.get(0);
+
+        for(int i = 1; i < sizeList.size(); i++){
+            if((sizeList.get(i).width * sizeList.get(i).height > (bestSize.width * bestSize.height))){
+                bestSize = sizeList.get(i);
+            }
+        }
+
+        parameters.setPreviewSize(bestSize.width, bestSize.height);
+
+
         camera.setParameters(parameters);
 
         try {
