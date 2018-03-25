@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.anthony.snapchatclone.R;
+import com.example.anthony.snapchatclone.UserInformation;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -36,11 +37,17 @@ public class RCAdapter extends RecyclerView.Adapter<RCViewHolders>{
     public void onBindViewHolder(final RCViewHolders holder, int position) {
         holder.mEmail.setText(usersList.get(position).getEmail());
 
+        if(UserInformation.listFollowing.contains(usersList.get(holder.getLayoutPosition()).getUid())){
+            holder.mFollow.setText("Following");
+        }else{
+            holder.mFollow.setText("Follow");
+        }
+
         holder.mFollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                if(holder.mFollow.getText().equals("Follow")){
+                if(!UserInformation.listFollowing.contains(usersList.get(holder.getLayoutPosition()).getUid())){
                     holder.mFollow.setText("Following");
                     FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("following").child(usersList.get(holder.getLayoutPosition()).getUid()).setValue(true);
                 }else{
