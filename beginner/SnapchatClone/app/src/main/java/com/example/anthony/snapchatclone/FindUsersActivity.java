@@ -4,13 +4,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.anthony.snapchatclone.RecyclerViewFollow.RCAdapter;
-import com.example.anthony.snapchatclone.RecyclerViewFollow.UsersObject;
+import com.example.anthony.snapchatclone.RecyclerViewFollow.FollowAdapter;
+import com.example.anthony.snapchatclone.RecyclerViewFollow.FollowObject;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -44,7 +43,7 @@ public class FindUsersActivity extends AppCompatActivity {
 
         mLayoutManager = new LinearLayoutManager(getApplication());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new RCAdapter(getDataSet(), getApplication());
+        mAdapter = new FollowAdapter(getDataSet(), getApplication());
         mRecyclerView.setAdapter(mAdapter);
 
         mSearch.setOnClickListener(new View.OnClickListener() {
@@ -68,7 +67,7 @@ public class FindUsersActivity extends AppCompatActivity {
                     email = dataSnapshot.child("email").getValue().toString();
                 }
                 if(!email.equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())){
-                    UsersObject obj = new UsersObject(email,uid);
+                    FollowObject obj = new FollowObject(email,uid);
                     results.add(obj);
                     mAdapter.notifyDataSetChanged();
                 }
@@ -101,8 +100,8 @@ public class FindUsersActivity extends AppCompatActivity {
         mAdapter.notifyItemRangeRemoved(0,size);
     }
 
-    private ArrayList<UsersObject> results = new ArrayList<>();
-    private ArrayList<UsersObject> getDataSet(){
+    private ArrayList<FollowObject> results = new ArrayList<>();
+    private ArrayList<FollowObject> getDataSet(){
         listenForData();
         return results;
     }
