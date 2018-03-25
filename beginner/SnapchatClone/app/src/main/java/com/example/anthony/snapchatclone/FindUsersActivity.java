@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -63,9 +64,7 @@ public class FindUsersActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 String email = "";
                 String uid = dataSnapshot.getRef().getKey();
-                if(dataSnapshot.child("email").getValue()!=null){
-                    email = dataSnapshot.child("email").getValue().toString();
-                }
+
                 if(!email.equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())){
                     UsersObject obj = new UsersObject(email,uid);
                     results.add(obj);
