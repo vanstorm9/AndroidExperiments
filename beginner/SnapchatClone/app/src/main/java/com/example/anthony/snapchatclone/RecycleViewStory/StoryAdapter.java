@@ -28,7 +28,7 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryViewHolders>{
     }
     @Override
     public StoryViewHolders onCreateViewHolder(ViewGroup parent, int viewType) {
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_follows_item, null);
+        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_story_item, null);
         StoryViewHolders rcv = new StoryViewHolders(layoutView);
         return rcv;
     }
@@ -36,27 +36,7 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryViewHolders>{
     @Override
     public void onBindViewHolder(final StoryViewHolders holder, int position) {
         holder.mEmail.setText(usersList.get(position).getEmail());
-
-        if(UserInformation.listFollowing.contains(usersList.get(holder.getLayoutPosition()).getUid())){
-            holder.mFollow.setText("Following");
-        }else{
-            holder.mFollow.setText("Follow");
-        }
-
-        holder.mFollow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                if(!UserInformation.listFollowing.contains(usersList.get(holder.getLayoutPosition()).getUid())){
-                    holder.mFollow.setText("Following");
-                    FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("following").child(usersList.get(holder.getLayoutPosition()).getUid()).setValue(true);
-                }else{
-                    holder.mFollow.setText("Follow");
-                    FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("following").child(usersList.get(holder.getLayoutPosition()).getUid()).removeValue();
-                }
-            }
-        });
-
+        holder.mEmail.setTag(usersList.get(position).getUid());
     }
 
     @Override

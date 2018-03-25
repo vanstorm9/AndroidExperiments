@@ -7,9 +7,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
-import com.example.anthony.snapchatclone.RecyclerViewFollow.FollowAdapter;
-import com.example.anthony.snapchatclone.RecyclerViewFollow.FollowObject;
+import com.example.anthony.snapchatclone.RecycleViewStory.StoryAdapter;
+import com.example.anthony.snapchatclone.RecycleViewStory.StoryObject;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -39,9 +45,17 @@ public class StoryFragment extends Fragment{
 
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new FollowAdapter(getDataSet());
+        mAdapter = new StoryAdapter(getDataSet(), getContext());
         mRecyclerView.setAdapter(mAdapter);
 
+        Button mRefresh = view.findViewById(R.id.refresh);
+        mRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clear();
+                listenForData();
+            }
+        });
         return view;
 
     }
@@ -54,12 +68,46 @@ public class StoryFragment extends Fragment{
         mAdapter.notifyItemRangeRemoved(0,size);
     }
 
-    private ArrayList<FollowObject> results = new ArrayList<>();
-    private ArrayList<FollowObject> getDataSet(){
+    private ArrayList<StoryObject> results = new ArrayList<>();
+    private ArrayList<StoryObject> getDataSet(){
         listenForData();
         return results;
     }
 
     private void listenForData() {
+        for(int i = 0; i < UserInformation.listFollowing.size(); i++){
+            DatabaseReference followingStoryDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserInformation.listFollowing.get(i));
+            followingStoryDb.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String email = dataSnapshot.child("email").getValue().toString();
+                    String uid = dataSnapshot.getRef().getKey();
+                    long timeStampBeg = 0;
+                    long timeStampEnd = 0;
+                    for(DataSnapshot storySnapShot : dataSnapshot.child("story").getChildren()){
+                        if(storySnapShot.child("timeStampBeg").getValue() != null){
+                            timeStampBeg = Long.parseLong(storySnapShot.child("timestampBeg").getValue().toString());
+                        }
+                        if(storySnapShot.child("timeStampEnd").getValue() != null){
+                            timeStampEnd = Long.parseLong(storySnapShot.child("timestampEnd").getValue().toString());
+                        }
+                        long timeStampCurrent = System.currentTimeMillis();
+                        if(timeStampCurrent >= timeStampBeg && timeStampCurrent <= timeStampEnd){
+                            StoryObject obj = new StoryObject(email,uid);
+                            if(!results.contains(obj)){
+                                results.add(obj);
+                                mAdapter.notifyDataSetChanged();
+                            }
+
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 }

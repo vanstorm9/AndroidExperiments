@@ -13,11 +13,9 @@ import com.example.anthony.snapchatclone.R;
 
 public class StoryViewHolders extends RecyclerView.ViewHolder{
     public TextView mEmail;
-    public Button mFollow;
 
     public StoryViewHolders(View itemView){
         super(itemView);
         mEmail = itemView.findViewById(R.id.email);
-        mFollow = itemView.findViewById(R.id.follow);
     }
 }
