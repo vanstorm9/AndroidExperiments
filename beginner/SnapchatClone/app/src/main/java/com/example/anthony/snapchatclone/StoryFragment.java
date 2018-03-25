@@ -82,30 +82,29 @@ public class StoryFragment extends Fragment{
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     String email = dataSnapshot.child("email").getValue().toString();
                     String uid = dataSnapshot.getRef().getKey();
-                    long timeStampBeg = 0;
-                    long timeStampEnd = 0;
-                    for(DataSnapshot storySnapShot : dataSnapshot.child("story").getChildren()){
-                        if(storySnapShot.child("timeStampBeg").getValue() != null){
-                            timeStampBeg = Long.parseLong(storySnapShot.child("timestampBeg").getValue().toString());
+                    long timestampBeg = 0;
+                    long timestampEnd = 0;
+                    for(DataSnapshot storySnapshot : dataSnapshot.child("story").getChildren()){
+                        if(storySnapshot.child("timestampBeg").getValue() != null){
+                            timestampBeg = Long.parseLong(storySnapshot.child("timestampBeg").getValue().toString());
                         }
-                        if(storySnapShot.child("timeStampEnd").getValue() != null){
-                            timeStampEnd = Long.parseLong(storySnapShot.child("timestampEnd").getValue().toString());
+                        if(storySnapshot.child("timestampEnd").getValue() != null){
+                            timestampEnd = Long.parseLong(storySnapshot.child("timestampEnd").getValue().toString());
                         }
-                        long timeStampCurrent = System.currentTimeMillis();
-                        if(timeStampCurrent >= timeStampBeg && timeStampCurrent <= timeStampEnd){
-                            StoryObject obj = new StoryObject(email,uid);
+                        long timestampCurrent = System.currentTimeMillis();
+                        if(timestampCurrent >= timestampBeg && timestampCurrent <= timestampEnd){
+                            StoryObject obj = new StoryObject(email, uid);
                             if(!results.contains(obj)){
                                 results.add(obj);
                                 mAdapter.notifyDataSetChanged();
                             }
-
                         }
+
                     }
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
                 }
             });
         }
