@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.anthony.snapchatclone.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
@@ -31,12 +33,27 @@ public class RCAdapter extends RecyclerView.Adapter<RCViewHolders>{
     }
 
     @Override
-    public void onBindViewHolder(RCViewHolders holder, int position) {
+    public void onBindViewHolder(final RCViewHolders holder, int position) {
         holder.mEmail.setText(usersList.get(position).getEmail());
+
+        holder.mFollow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                if(holder.mFollow.getText().equals("Follow")){
+                    holder.mFollow.setText("following");
+                    FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("following").child(usersList.get(holder.getLayoutPosition()).getUid()).setValue(true);
+                }else{
+                    holder.mFollow.setText("follow");
+                    FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("following").child(usersList.get(holder.getLayoutPosition()).getUid()).removeValue();
+                }
+            }
+        });
+
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return this.usersList.size();
     }
 }
