@@ -41,10 +41,10 @@ public class RCAdapter extends RecyclerView.Adapter<RCViewHolders>{
             public void onClick(View view) {
                 String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 if(holder.mFollow.getText().equals("Follow")){
-                    holder.mFollow.setText("following");
+                    holder.mFollow.setText("Following");
                     FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("following").child(usersList.get(holder.getLayoutPosition()).getUid()).setValue(true);
                 }else{
-                    holder.mFollow.setText("follow");
+                    holder.mFollow.setText("Follow");
                     FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("following").child(usersList.get(holder.getLayoutPosition()).getUid()).removeValue();
                 }
             }

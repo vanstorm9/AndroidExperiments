@@ -64,7 +64,9 @@ public class FindUsersActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 String email = "";
                 String uid = dataSnapshot.getRef().getKey();
-
+                if(dataSnapshot.child("email").getValue() != null){
+                    email = dataSnapshot.child("email").getValue().toString();
+                }
                 if(!email.equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())){
                     UsersObject obj = new UsersObject(email,uid);
                     results.add(obj);
@@ -101,7 +103,7 @@ public class FindUsersActivity extends AppCompatActivity {
 
     private ArrayList<UsersObject> results = new ArrayList<>();
     private ArrayList<UsersObject> getDataSet(){
-        //listenForData();
+        listenForData();
         return results;
     }
 }
